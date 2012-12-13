@@ -38,7 +38,7 @@ public:
 private:
     DocumentWindow& owner;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ButtonListenerProxy);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ButtonListenerProxy)
 };
 
 //==============================================================================
@@ -107,11 +107,10 @@ void DocumentWindow::setTitleBarHeight (const int newHeight)
     repaintTitleBar();
 }
 
-void DocumentWindow::setTitleBarButtonsRequired (const int requiredButtons_,
-                                                 const bool positionTitleBarButtonsOnLeft_)
+void DocumentWindow::setTitleBarButtonsRequired (const int buttons, const bool onLeft)
 {
-    requiredButtons = requiredButtons_;
-    positionTitleBarButtonsOnLeft = positionTitleBarButtonsOnLeft_;
+    requiredButtons = buttons;
+    positionTitleBarButtonsOnLeft = onLeft;
     lookAndFeelChanged();
 }
 

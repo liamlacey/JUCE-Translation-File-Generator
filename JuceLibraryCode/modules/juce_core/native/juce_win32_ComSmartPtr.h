@@ -34,10 +34,10 @@ template <class ComClass>
 class ComSmartPtr
 {
 public:
-    ComSmartPtr() throw() : p (0)                               {}
-    ComSmartPtr (ComClass* const p_) : p (p_)                   { if (p_ != 0) p_->AddRef(); }
-    ComSmartPtr (const ComSmartPtr<ComClass>& p_) : p (p_.p)    { if (p  != 0) p ->AddRef(); }
-    ~ComSmartPtr()                                              { release(); }
+    ComSmartPtr() throw() : p (0)                                  {}
+    ComSmartPtr (ComClass* const obj) : p (obj)                    { if (p) p->AddRef(); }
+    ComSmartPtr (const ComSmartPtr<ComClass>& other) : p (other.p) { if (p) p->AddRef(); }
+    ~ComSmartPtr()                                                 { release(); }
 
     operator ComClass*() const throw()     { return p; }
     ComClass& operator*() const throw()    { return *p; }
@@ -131,12 +131,12 @@ public:
     JUCE_COMRESULT QueryInterface (REFIID refId, void** result)
     {
        #if ! JUCE_MINGW
-        if (refId == __uuidof (ComClass))   { AddRef(); *result = dynamic_cast <ComClass*> (this); return S_OK; }
+        if (refId == __uuidof (ComClass))   { this->AddRef(); *result = dynamic_cast <ComClass*> (this); return S_OK; }
        #else
         jassertfalse; // need to find a mingw equivalent of __uuidof to make this possible
        #endif
 
-        if (refId == IID_IUnknown)          { AddRef(); *result = dynamic_cast <IUnknown*> (this); return S_OK; }
+        if (refId == IID_IUnknown)          { this->AddRef(); *result = dynamic_cast <IUnknown*> (this); return S_OK; }
 
         *result = 0;
         return E_NOINTERFACE;

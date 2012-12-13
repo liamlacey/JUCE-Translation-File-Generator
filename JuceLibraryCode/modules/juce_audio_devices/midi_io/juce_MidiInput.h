@@ -72,8 +72,8 @@ public:
     */
     virtual void handlePartialSysexMessage (MidiInput* source,
                                             const uint8* messageData,
-                                            const int numBytesSoFar,
-                                            const double timestamp)
+                                            int numBytesSoFar,
+                                            double timestamp)
     {
         // (this bit is just to avoid compiler warnings about unused variables)
         (void) source; (void) messageData; (void) numBytesSoFar; (void) timestamp;
@@ -176,7 +176,7 @@ protected:
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiInput);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiInput)
 };
 
 

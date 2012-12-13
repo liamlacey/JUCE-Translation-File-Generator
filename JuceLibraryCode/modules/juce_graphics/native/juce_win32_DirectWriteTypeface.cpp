@@ -121,7 +121,7 @@ public:
 private:
     DynamicLibrary direct2dDll, directWriteDll;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Direct2DFactories);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Direct2DFactories)
 };
 
 //==================================================================================================
@@ -178,7 +178,7 @@ public:
         const float pathAscent  = (1024.0f * dwFontMetrics.ascent)  / designUnitsPerEm;
         const float pathDescent = (1024.0f * dwFontMetrics.descent) / designUnitsPerEm;
         const float pathScale   = 1.0f / (std::abs (pathAscent) + std::abs (pathDescent));
-        pathTransform = AffineTransform::scale (pathScale, pathScale);
+        pathTransform = AffineTransform::scale (pathScale);
     }
 
     float getAscent() const     { return ascent; }
@@ -301,10 +301,10 @@ private:
         Path path;
 
     private:
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PathGeometrySink);
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PathGeometrySink)
     };
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WindowsDirectWriteTypeface);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WindowsDirectWriteTypeface)
 };
 
 #endif

@@ -60,11 +60,8 @@ public:
     void sendPropertyChangeMessage (ValueTree& tree, const Identifier& property)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-        {
-            ValueTree* const v = valueTreesWithListeners[i];
-            if (v != nullptr)
+            if (ValueTree* const v = valueTreesWithListeners[i])
                 v->listeners.call (&ValueTree::Listener::valueTreePropertyChanged, tree, property);
-        }
     }
 
     void sendPropertyChangeMessage (const Identifier& property)
@@ -78,11 +75,8 @@ public:
     void sendChildAddedMessage (ValueTree& tree, ValueTree& child)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-        {
-            ValueTree* const v = valueTreesWithListeners[i];
-            if (v != nullptr)
+            if (ValueTree* const v = valueTreesWithListeners[i])
                 v->listeners.call (&ValueTree::Listener::valueTreeChildAdded, tree, child);
-        }
     }
 
     void sendChildAddedMessage (ValueTree child)
@@ -96,11 +90,8 @@ public:
     void sendChildRemovedMessage (ValueTree& tree, ValueTree& child)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-        {
-            ValueTree* const v = valueTreesWithListeners[i];
-            if (v != nullptr)
+            if (ValueTree* const v = valueTreesWithListeners[i])
                 v->listeners.call (&ValueTree::Listener::valueTreeChildRemoved, tree, child);
-        }
     }
 
     void sendChildRemovedMessage (ValueTree child)
@@ -114,11 +105,8 @@ public:
     void sendChildOrderChangedMessage (ValueTree& tree)
     {
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-        {
-            ValueTree* const v = valueTreesWithListeners[i];
-            if (v != nullptr)
+            if (ValueTree* const v = valueTreesWithListeners[i])
                 v->listeners.call (&ValueTree::Listener::valueTreeChildOrderChanged, tree);
-        }
     }
 
     void sendChildOrderChangedMessage()
@@ -134,18 +122,12 @@ public:
         ValueTree tree (this);
 
         for (int j = children.size(); --j >= 0;)
-        {
-            SharedObject* const child = children.getObjectPointer (j);
-            if (child != nullptr)
+            if (SharedObject* const child = children.getObjectPointer (j))
                 child->sendParentChangeMessage();
-        }
 
         for (int i = valueTreesWithListeners.size(); --i >= 0;)
-        {
-            ValueTree* const v = valueTreesWithListeners[i];
-            if (v != nullptr)
+            if (ValueTree* const v = valueTreesWithListeners[i])
                 v->listeners.call (&ValueTree::Listener::valueTreeParentChanged, tree);
-        }
     }
 
     const var& getProperty (const Identifier& name) const noexcept
@@ -167,9 +149,7 @@ public:
         }
         else
         {
-            const var* const existingValue = properties.getVarPointer (name);
-
-            if (existingValue != nullptr)
+            if (const var* const existingValue = properties.getVarPointer (name))
             {
                 if (*existingValue != newValue)
                     undoManager->perform (new SetPropertyAction (this, name, newValue, *existingValue, false, false));
@@ -270,15 +250,9 @@ public:
 
     bool isAChildOf (const SharedObject* const possibleParent) const noexcept
     {
-        const SharedObject* p = parent;
-
-        while (p != nullptr)
-        {
+        for (const SharedObject* p = parent; p != nullptr; p = p->parent)
             if (p == possibleParent)
                 return true;
-
-            p = p->parent;
-        }
 
         return false;
     }
@@ -527,7 +501,7 @@ public:
         var oldValue;
         const bool isAddingNewProperty : 1, isDeletingProperty : 1;
 
-        JUCE_DECLARE_NON_COPYABLE (SetPropertyAction);
+        JUCE_DECLARE_NON_COPYABLE (SetPropertyAction)
     };
 
     //==============================================================================
@@ -580,7 +554,7 @@ public:
         const int childIndex;
         const bool isDeleting;
 
-        JUCE_DECLARE_NON_COPYABLE (AddOrRemoveChildAction);
+        JUCE_DECLARE_NON_COPYABLE (AddOrRemoveChildAction)
     };
 
     //==============================================================================
@@ -611,10 +585,9 @@ public:
 
         UndoableAction* createCoalescedAction (UndoableAction* nextAction)
         {
-            MoveChildAction* next = dynamic_cast <MoveChildAction*> (nextAction);
-
-            if (next != nullptr && next->parent == parent && next->startIndex == endIndex)
-                return new MoveChildAction (parent, startIndex, next->endIndex);
+            if (MoveChildAction* next = dynamic_cast <MoveChildAction*> (nextAction))
+                if (next->parent == parent && next->startIndex == endIndex)
+                    return new MoveChildAction (parent, startIndex, next->endIndex);
 
             return nullptr;
         }
@@ -623,7 +596,7 @@ public:
         const Ptr parent;
         const int startIndex, endIndex;
 
-        JUCE_DECLARE_NON_COPYABLE (MoveChildAction);
+        JUCE_DECLARE_NON_COPYABLE (MoveChildAction)
     };
 
     //==============================================================================
@@ -635,7 +608,7 @@ public:
 
 private:
     SharedObject& operator= (const SharedObject&);
-    JUCE_LEAK_DETECTOR (SharedObject);
+    JUCE_LEAK_DETECTOR (SharedObject)
 };
 
 //==============================================================================
@@ -841,7 +814,7 @@ private:
     void valueTreeChildOrderChanged (ValueTree&) {}
     void valueTreeParentChanged (ValueTree&) {}
 
-    JUCE_DECLARE_NON_COPYABLE (ValueTreePropertyValueSource);
+    JUCE_DECLARE_NON_COPYABLE (ValueTreePropertyValueSource)
 };
 
 Value ValueTree::getPropertyAsValue (const Identifier& name, UndoManager* const undoManager)
@@ -976,6 +949,12 @@ ValueTree ValueTree::fromXml (const XmlElement& xml)
     return v;
 }
 
+String ValueTree::toXmlString() const
+{
+    const ScopedPointer<XmlElement> xml (createXml());
+    return xml != nullptr ? xml->createDocument (String::empty) : String::empty;
+}
+
 //==============================================================================
 void ValueTree::writeToStream (OutputStream& output) const
 {
@@ -1008,6 +987,7 @@ ValueTree ValueTree::readFromStream (InputStream& input)
     }
 
     const int numChildren = input.readCompressedInt();
+    v.object->children.ensureStorageAllocated (numChildren);
 
     for (int i = 0; i < numChildren; ++i)
     {

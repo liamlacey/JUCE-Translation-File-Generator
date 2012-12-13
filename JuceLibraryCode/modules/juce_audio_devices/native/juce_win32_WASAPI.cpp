@@ -23,8 +23,8 @@
   ==============================================================================
 */
 
-#ifndef WASAPI_ENABLE_LOGGING
- #define WASAPI_ENABLE_LOGGING 0
+#ifndef JUCE_WASAPI_LOGGING
+ #define JUCE_WASAPI_LOGGING 0
 #endif
 
 //==============================================================================
@@ -34,48 +34,48 @@ namespace WasapiClasses
 void logFailure (HRESULT hr)
 {
     (void) hr;
+    jassert (hr != 0x800401f0); // If you hit this, it means you're trying to call from
+                                // a thread which hasn't been initialised with CoInitialize().
 
-  #if WASAPI_ENABLE_LOGGING
+   #if JUCE_WASAPI_LOGGING
     if (FAILED (hr))
     {
-        String e;
-        e << Time::getCurrentTime().toString (true, true, true, true)
-          << " -- WASAPI error: ";
+        const char* m = nullptr;
 
         switch (hr)
         {
-            case E_POINTER:                                 e << "E_POINTER"; break;
-            case E_INVALIDARG:                              e << "E_INVALIDARG"; break;
-            case AUDCLNT_E_NOT_INITIALIZED:                 e << "AUDCLNT_E_NOT_INITIALIZED"; break;
-            case AUDCLNT_E_ALREADY_INITIALIZED:             e << "AUDCLNT_E_ALREADY_INITIALIZED"; break;
-            case AUDCLNT_E_WRONG_ENDPOINT_TYPE:             e << "AUDCLNT_E_WRONG_ENDPOINT_TYPE"; break;
-            case AUDCLNT_E_DEVICE_INVALIDATED:              e << "AUDCLNT_E_DEVICE_INVALIDATED"; break;
-            case AUDCLNT_E_NOT_STOPPED:                     e << "AUDCLNT_E_NOT_STOPPED"; break;
-            case AUDCLNT_E_BUFFER_TOO_LARGE:                e << "AUDCLNT_E_BUFFER_TOO_LARGE"; break;
-            case AUDCLNT_E_OUT_OF_ORDER:                    e << "AUDCLNT_E_OUT_OF_ORDER"; break;
-            case AUDCLNT_E_UNSUPPORTED_FORMAT:              e << "AUDCLNT_E_UNSUPPORTED_FORMAT"; break;
-            case AUDCLNT_E_INVALID_SIZE:                    e << "AUDCLNT_E_INVALID_SIZE"; break;
-            case AUDCLNT_E_DEVICE_IN_USE:                   e << "AUDCLNT_E_DEVICE_IN_USE"; break;
-            case AUDCLNT_E_BUFFER_OPERATION_PENDING:        e << "AUDCLNT_E_BUFFER_OPERATION_PENDING"; break;
-            case AUDCLNT_E_THREAD_NOT_REGISTERED:           e << "AUDCLNT_E_THREAD_NOT_REGISTERED"; break;
-            case AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:      e << "AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED"; break;
-            case AUDCLNT_E_ENDPOINT_CREATE_FAILED:          e << "AUDCLNT_E_ENDPOINT_CREATE_FAILED"; break;
-            case AUDCLNT_E_SERVICE_NOT_RUNNING:             e << "AUDCLNT_E_SERVICE_NOT_RUNNING"; break;
-            case AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:        e << "AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED"; break;
-            case AUDCLNT_E_EXCLUSIVE_MODE_ONLY:             e << "AUDCLNT_E_EXCLUSIVE_MODE_ONLY"; break;
-            case AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL:    e << "AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL"; break;
-            case AUDCLNT_E_EVENTHANDLE_NOT_SET:             e << "AUDCLNT_E_EVENTHANDLE_NOT_SET"; break;
-            case AUDCLNT_E_INCORRECT_BUFFER_SIZE:           e << "AUDCLNT_E_INCORRECT_BUFFER_SIZE"; break;
-            case AUDCLNT_E_BUFFER_SIZE_ERROR:               e << "AUDCLNT_E_BUFFER_SIZE_ERROR"; break;
-            case AUDCLNT_S_BUFFER_EMPTY:                    e << "AUDCLNT_S_BUFFER_EMPTY"; break;
-            case AUDCLNT_S_THREAD_ALREADY_REGISTERED:       e << "AUDCLNT_S_THREAD_ALREADY_REGISTERED"; break;
-            default:                                        e << String::toHexString ((int) hr); break;
+            case E_POINTER:                                 m = "E_POINTER"; break;
+            case E_INVALIDARG:                              m = "E_INVALIDARG"; break;
+            case AUDCLNT_E_NOT_INITIALIZED:                 m = "AUDCLNT_E_NOT_INITIALIZED"; break;
+            case AUDCLNT_E_ALREADY_INITIALIZED:             m = "AUDCLNT_E_ALREADY_INITIALIZED"; break;
+            case AUDCLNT_E_WRONG_ENDPOINT_TYPE:             m = "AUDCLNT_E_WRONG_ENDPOINT_TYPE"; break;
+            case AUDCLNT_E_DEVICE_INVALIDATED:              m = "AUDCLNT_E_DEVICE_INVALIDATED"; break;
+            case AUDCLNT_E_NOT_STOPPED:                     m = "AUDCLNT_E_NOT_STOPPED"; break;
+            case AUDCLNT_E_BUFFER_TOO_LARGE:                m = "AUDCLNT_E_BUFFER_TOO_LARGE"; break;
+            case AUDCLNT_E_OUT_OF_ORDER:                    m = "AUDCLNT_E_OUT_OF_ORDER"; break;
+            case AUDCLNT_E_UNSUPPORTED_FORMAT:              m = "AUDCLNT_E_UNSUPPORTED_FORMAT"; break;
+            case AUDCLNT_E_INVALID_SIZE:                    m = "AUDCLNT_E_INVALID_SIZE"; break;
+            case AUDCLNT_E_DEVICE_IN_USE:                   m = "AUDCLNT_E_DEVICE_IN_USE"; break;
+            case AUDCLNT_E_BUFFER_OPERATION_PENDING:        m = "AUDCLNT_E_BUFFER_OPERATION_PENDING"; break;
+            case AUDCLNT_E_THREAD_NOT_REGISTERED:           m = "AUDCLNT_E_THREAD_NOT_REGISTERED"; break;
+            case AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED:      m = "AUDCLNT_E_EXCLUSIVE_MODE_NOT_ALLOWED"; break;
+            case AUDCLNT_E_ENDPOINT_CREATE_FAILED:          m = "AUDCLNT_E_ENDPOINT_CREATE_FAILED"; break;
+            case AUDCLNT_E_SERVICE_NOT_RUNNING:             m = "AUDCLNT_E_SERVICE_NOT_RUNNING"; break;
+            case AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED:        m = "AUDCLNT_E_EVENTHANDLE_NOT_EXPECTED"; break;
+            case AUDCLNT_E_EXCLUSIVE_MODE_ONLY:             m = "AUDCLNT_E_EXCLUSIVE_MODE_ONLY"; break;
+            case AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL:    m = "AUDCLNT_E_BUFDURATION_PERIOD_NOT_EQUAL"; break;
+            case AUDCLNT_E_EVENTHANDLE_NOT_SET:             m = "AUDCLNT_E_EVENTHANDLE_NOT_SET"; break;
+            case AUDCLNT_E_INCORRECT_BUFFER_SIZE:           m = "AUDCLNT_E_INCORRECT_BUFFER_SIZE"; break;
+            case AUDCLNT_E_BUFFER_SIZE_ERROR:               m = "AUDCLNT_E_BUFFER_SIZE_ERROR"; break;
+            case AUDCLNT_S_BUFFER_EMPTY:                    m = "AUDCLNT_S_BUFFER_EMPTY"; break;
+            case AUDCLNT_S_THREAD_ALREADY_REGISTERED:       m = "AUDCLNT_S_THREAD_ALREADY_REGISTERED"; break;
+            default:                                        break;
         }
 
-        DBG (e);
-        jassertfalse;
+        Logger::writeToLog ("WASAPI error: " + (m != nullptr ? String (m)
+                                                             : String::toHexString ((int) hr)));
     }
-  #endif
+   #endif
 }
 
 #undef check
@@ -87,6 +87,64 @@ bool check (HRESULT hr)
 }
 
 //==============================================================================
+namespace
+{
+    enum EDataFlow
+    {
+        eRender = 0,
+        eCapture = (eRender + 1),
+        eAll = (eCapture + 1)
+    };
+
+    enum { DEVICE_STATE_ACTIVE = 1 };
+
+    struct __declspec (uuid ("D666063F-1587-4E43-81F1-B948E807363F")) IMMDevice : public IUnknown
+    {
+        virtual HRESULT STDMETHODCALLTYPE Activate(REFIID, DWORD, PROPVARIANT*, void**) = 0;
+        virtual HRESULT STDMETHODCALLTYPE OpenPropertyStore(DWORD, IPropertyStore**) = 0;
+        virtual HRESULT STDMETHODCALLTYPE GetId(LPWSTR*) = 0;
+        virtual HRESULT STDMETHODCALLTYPE GetState(DWORD*) = 0;
+    };
+
+    struct __declspec (uuid ("1BE09788-6894-4089-8586-9A2A6C265AC5")) IMMEndpoint : public IUnknown
+    {
+        virtual HRESULT STDMETHODCALLTYPE GetDataFlow(EDataFlow*) = 0;
+    };
+
+    struct IMMDeviceCollection : public IUnknown
+    {
+        virtual HRESULT STDMETHODCALLTYPE GetCount(UINT*) = 0;
+        virtual HRESULT STDMETHODCALLTYPE Item(UINT, IMMDevice**) = 0;
+    };
+
+    enum ERole
+    {
+        eConsole = 0,
+        eMultimedia = (eConsole + 1),
+        eCommunications = (eMultimedia + 1)
+    };
+
+    struct IMMNotificationClient : public IUnknown
+    {
+        virtual HRESULT STDMETHODCALLTYPE OnDeviceStateChanged(LPCWSTR, DWORD) = 0;
+        virtual HRESULT STDMETHODCALLTYPE OnDeviceAdded(LPCWSTR) = 0;
+        virtual HRESULT STDMETHODCALLTYPE OnDeviceRemoved(LPCWSTR) = 0;
+        virtual HRESULT STDMETHODCALLTYPE OnDefaultDeviceChanged(EDataFlow, ERole, LPCWSTR) = 0;
+        virtual HRESULT STDMETHODCALLTYPE OnPropertyValueChanged(LPCWSTR, const PROPERTYKEY) = 0;
+    };
+
+    struct __declspec (uuid ("A95664D2-9614-4F35-A746-DE8DB63617E6")) IMMDeviceEnumerator : public IUnknown
+    {
+        virtual HRESULT STDMETHODCALLTYPE EnumAudioEndpoints(EDataFlow, DWORD, IMMDeviceCollection**) = 0;
+        virtual HRESULT STDMETHODCALLTYPE GetDefaultAudioEndpoint(EDataFlow, ERole, IMMDevice**) = 0;
+        virtual HRESULT STDMETHODCALLTYPE GetDevice(LPCWSTR, IMMDevice**) = 0;
+        virtual HRESULT STDMETHODCALLTYPE RegisterEndpointNotificationCallback(IMMNotificationClient*) = 0;
+        virtual HRESULT STDMETHODCALLTYPE UnregisterEndpointNotificationCallback(IMMNotificationClient*) = 0;
+    };
+
+    struct __declspec (uuid ("BCDE0395-E52F-467C-8E3D-C4579291692E")) MMDeviceEnumerator;
+}
+
 String getDeviceID (IMMDevice* const device)
 {
     String s;
@@ -185,7 +243,7 @@ public:
         CloseHandle (clientEvent);
     }
 
-    bool isOk() const noexcept    { return defaultBufferSize > 0 && defaultSampleRate > 0; }
+    bool isOk() const noexcept   { return defaultBufferSize > 0 && defaultSampleRate > 0; }
 
     bool openClient (const double newSampleRate, const BigInteger& newChannels)
     {
@@ -281,7 +339,7 @@ private:
     private:
         WASAPIDeviceBase& owner;
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SessionEventCallback);
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SessionEventCallback)
     };
 
     ComSmartPtr <IAudioSessionControl> audioSessionControl;
@@ -391,7 +449,7 @@ private:
         return false;
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIDeviceBase);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIDeviceBase)
 };
 
 //==============================================================================
@@ -509,7 +567,7 @@ public:
     ScopedPointer <AudioData::Converter> converter;
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIInputDevice);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIInputDevice)
 };
 
 //==============================================================================
@@ -596,7 +654,7 @@ public:
     ScopedPointer <AudioData::Converter> converter;
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIOutputDevice);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIOutputDevice)
 };
 
 //==============================================================================
@@ -870,7 +928,6 @@ public:
                     sampleRateChanged = true;
             }
 
-            JUCE_TRY
             {
                 const ScopedLock sl (startStopLock);
 
@@ -880,7 +937,6 @@ public:
                 else
                     outs.clear();
             }
-            JUCE_CATCH_EXCEPTION
 
             if (outputDevice != nullptr)
             {
@@ -959,7 +1015,7 @@ private:
     }
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIAudioIODevice);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIAudioIODevice)
 };
 
 
@@ -1155,7 +1211,7 @@ private:
     }
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIAudioIODeviceType);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WASAPIAudioIODeviceType)
 };
 
 }

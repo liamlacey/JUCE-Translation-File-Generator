@@ -253,6 +253,9 @@ public:
     /** Returns true if the editor is currently focused and active. */
     bool isBeingEdited() const noexcept;
 
+    /** Returns the currently-visible text editor, or nullptr if none is open. */
+    TextEditor* getCurrentTextEditor() const noexcept;
+
 protected:
     //==============================================================================
     /** Creates the TextEditor component that will be used when the user has clicked on the label.
@@ -327,7 +330,7 @@ private:
     bool updateFromTextEditorContents (TextEditor&);
     void callChangeListeners();
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Label);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Label)
 };
 
 /** This typedef is just for compatibility with old code - newer code should use the Label::Listener class directly. */

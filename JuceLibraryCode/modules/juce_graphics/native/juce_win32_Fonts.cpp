@@ -158,13 +158,13 @@ StringArray Font::findAllTypefaceStyles (const String& family)
     return results;
 }
 
-extern bool juce_IsRunningInWine();
+extern bool juce_isRunningInWine();
 
 struct DefaultFontNames
 {
     DefaultFontNames()
     {
-        if (juce_IsRunningInWine())
+        if (juce_isRunningInWine())
         {
             // If we're running in Wine, then use fonts that might be available on Linux..
             defaultSans     = "Bitstream Vera Sans";
@@ -480,7 +480,7 @@ private:
         return kerningPairs.getReference (index).kerning;
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WindowsTypeface);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WindowsTypeface)
 };
 
 const MAT2 WindowsTypeface::identityMatrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, 1 } };

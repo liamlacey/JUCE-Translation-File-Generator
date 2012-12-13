@@ -36,10 +36,10 @@ extern jobject createOpenGLView (ComponentPeer*);
 class OpenGLContext::NativeContext
 {
 public:
-    NativeContext (Component& component_,
+    NativeContext (Component& comp,
                    const OpenGLPixelFormat& pixelFormat,
                    void* /*contextToShareWith*/)
-        : component (component_),
+        : component (comp),
           isInsideGLCallback (false)
     {
         {
@@ -143,7 +143,7 @@ private:
     static CriticalSection contextListLock;
     static ContextArray contextList;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NativeContext);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (NativeContext)
 };
 
 CriticalSection OpenGLContext::NativeContext::contextListLock;

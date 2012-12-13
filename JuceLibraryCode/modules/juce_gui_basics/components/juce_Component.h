@@ -776,11 +776,8 @@ public:
     TargetClass* findParentComponentOfClass() const
     {
         for (Component* p = parentComponent; p != nullptr; p = p->parentComponent)
-        {
-            TargetClass* const target = dynamic_cast <TargetClass*> (p);
-            if (target != nullptr)
+            if (TargetClass* const target = dynamic_cast <TargetClass*> (p))
                 return target;
-        }
 
         return nullptr;
     }
@@ -2139,7 +2136,7 @@ public:
     private:
         const WeakReference<Component> safePointer;
 
-        JUCE_DECLARE_NON_COPYABLE (BailOutChecker);
+        JUCE_DECLARE_NON_COPYABLE (BailOutChecker)
     };
 
     //==============================================================================
@@ -2172,7 +2169,7 @@ public:
     private:
         Component& component;
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Positioner);
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Positioner)
     };
 
     /** Returns the Positioner object that has been set for this component.
@@ -2258,6 +2255,7 @@ private:
         bool isDisabledFlag             : 1;
         bool childCompFocusedFlag       : 1;
         bool dontClipGraphicsFlag       : 1;
+        bool mouseDownWasBlocked        : 1;
       #if JUCE_DEBUG
         bool isInsidePaintCall          : 1;
       #endif
@@ -2309,7 +2307,7 @@ private:
     /* Components aren't allowed to have copy constructors, as this would mess up parent hierarchies.
        You might need to give your subclasses a private dummy constructor to avoid compiler warnings.
     */
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Component);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Component)
 
     //==============================================================================
    #if JUCE_CATCH_DEPRECATED_CODE_MISUSE

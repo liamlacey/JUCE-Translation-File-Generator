@@ -214,7 +214,7 @@ public:
 
             if (OK (AudioObjectGetPropertyData (deviceID, &pa, 0, 0, &size, ranges)))
             {
-                bufferSizes.add ((int) ranges[0].mMinimum);
+                bufferSizes.add ((int) (ranges[0].mMinimum + 15) & ~15);
 
                 for (int i = 32; i < 2048; i += 32)
                 {
@@ -560,14 +560,13 @@ public:
     void audioCallback (const AudioBufferList* inInputData,
                         AudioBufferList* outOutputData)
     {
-        int i;
         const ScopedLock sl (callbackLock);
 
         if (callback != nullptr)
         {
             if (inputDevice == 0)
             {
-                for (i = numInputChans; --i >= 0;)
+                for (int i = numInputChans; --i >= 0;)
                 {
                     const CallbackDetailsForChannel& info = inputChannelInfo[i];
                     float* dest = tempInputBuffers [i];
@@ -612,7 +611,7 @@ public:
                                                      bufferSize);
                 }
 
-                for (i = numOutputChans; --i >= 0;)
+                for (int i = numOutputChans; --i >= 0;)
                 {
                     const CallbackDetailsForChannel& info = outputChannelInfo[i];
                     const float* src = tempOutputBuffers [i];
@@ -633,7 +632,7 @@ public:
         }
         else
         {
-            for (i = jmin (numOutputChans, numOutputChannelInfos); --i >= 0;)
+            for (int i = jmin (numOutputChans, numOutputChannelInfos); --i >= 0;)
             {
                 const CallbackDetailsForChannel& info = outputChannelInfo[i];
                 float* dest = ((float*) outOutputData->mBuffers[info.streamNum].mData)
@@ -829,7 +828,7 @@ private:
         return false;
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreAudioInternal);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreAudioInternal)
 };
 
 
@@ -1044,7 +1043,7 @@ private:
         return noErr;
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreAudioIODevice);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreAudioIODevice)
 };
 
 //==============================================================================
@@ -1258,7 +1257,7 @@ private:
         return noErr;
     }
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreAudioIODeviceType);
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreAudioIODeviceType)
 };
 
 //==============================================================================
