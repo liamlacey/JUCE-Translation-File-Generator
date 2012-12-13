@@ -299,7 +299,27 @@ void AppComponent::buttonClicked (Button *button)
         
         fileToSearch->setVisible(true);    
     }
-        
+    
+    else if (button == allFilesButton)
+    {
+        if (allFilesButton->getToggleState() == true)
+        {
+            cppTypeButton->setToggleState(false, dontSendNotification);
+            hTypeButton->setToggleState(false, dontSendNotification);
+            mTypeButton->setToggleState(false, dontSendNotification);
+            mmTypeButton->setToggleState(false, dontSendNotification);
+            cTypeButton->setToggleState(false, dontSendNotification);
+        }
+    }
+    
+    else if (button == cppTypeButton ||
+             button == hTypeButton ||
+             button == mTypeButton ||
+             button == mmTypeButton ||
+             button == cTypeButton)
+    {
+        allFilesButton->setToggleState(false, dontSendNotification);
+    }
 }
 
 
