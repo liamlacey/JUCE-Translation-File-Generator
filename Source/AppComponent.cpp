@@ -416,14 +416,21 @@ void AppComponent::run()
         //=================================================================================
         //=================================================================================
         
-        
-        
         //create an array to hold any matching string that need to be translated
         StringArray foundStrings;
         
+        //create a StringArray containing the most common ways that translate or TRANS could appear
+        StringArray stringsToFind;
+        stringsToFind.add("translate(\"");
+        stringsToFind.add("translate (\"");
+        stringsToFind.add("translate( \"");
+        stringsToFind.add("translate ( \"");
+        stringsToFind.add("TRANS(\"");
+        stringsToFind.add("TRANS (\"");
+        stringsToFind.add("TRANS( \"");
+        stringsToFind.add("TRANS ( \"");
         
-        //search through each file in the array looking for the matching strings
-        //and add the relevent strings to the StringArray
+        //search through each file in the array
         for (int x = 0; x < noOfFiles; x++)
         {
             if (threadShouldExit() == true)
@@ -437,66 +444,42 @@ void AppComponent::run()
                 progressLabel->setText("Searching... " + filesToSearch[x].getFileName(), false);
             }
             
-            String stringToFind("translate(\"");
-            int currentIndex = 0;
-            bool finishedSearch = false;
-            
-            while (finishedSearch == false)
+            //look for instances of each translate/TRANS string
+            //and add the relevent strings to the StringArray
+            for (int y = 0; y < stringsToFind.size(); y++)
             {
-                if (threadShouldExit() == true)
-                    break;
+                String stringToFind(stringsToFind[y]);
+                int stringLength = stringToFind.length();
+                int currentIndex = 0;
+                bool finishedSearch = false;
                 
-                int startIndex = fileAsString.indexOf(currentIndex, stringToFind) + 10;
-                
-                //if an/another instance of the string appears in the file...
-                if (startIndex != 9) //-1 which means not found stringToFind, + 10)
+                while (finishedSearch == false)
                 {
-                    int endIndex = fileAsString.indexOf(startIndex, "\")") + 1;
-                    String subString = fileAsString.substring(startIndex, endIndex);
-                    foundStrings.add(subString);
+                    if (threadShouldExit() == true)
+                        break;
                     
-                    currentIndex = endIndex;
-                }
-                //if no/no more instances are in the file, stop searching
-                else
-                {
-                    finishedSearch = true;
-                }
-            }
-            
-            
-            stringToFind = "TRANS(\"";
-            currentIndex = 0;
-            finishedSearch = false;
-            
-            while (finishedSearch == false)
-            {
-                if (threadShouldExit() == true)
-                    break;
-                
-                int startIndex = fileAsString.indexOf(currentIndex, stringToFind) + 6;
-                
-                //if an/another instance of the string appears in the file...
-                if (startIndex != 5) //-1 which means not found stringToFind, + 6)
-                {
-                    int endIndex = fileAsString.indexOf(startIndex, "\")") + 1;
-                    String subString = fileAsString.substring(startIndex, endIndex);
-                    foundStrings.add(subString);
+                    int startIndex = fileAsString.indexOf(currentIndex, stringToFind) + (stringLength - 1);
                     
-                    currentIndex = endIndex;
+                    //if an/another instance of the string appears in the file...
+                    if (startIndex != (stringLength - 2)) //-1 which means not found stringToFind, + stringLength-1)
+                    {
+                        int endIndex = fileAsString.indexOf(startIndex, "\")") + 1;
+                        String subString = fileAsString.substring(startIndex, endIndex);
+                        foundStrings.add(subString);
+                        
+                        currentIndex = endIndex;
+                    }
+                    //if no/no more instances are in the file, stop searching
+                    else
+                    {
+                        finishedSearch = true;
+                    }
                 }
-                //if no/no more instances are in the file, stop searching
-                else
-                {
-                    finishedSearch = true;
-                }
-                
             }
             
             
             if (threadShouldExit() == true)
                 break;
-            
         }
         
         
